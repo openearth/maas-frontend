@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import CreateModel from '../views/CreateModel.vue'
 import ModelDetails from '../views/ModelDetails.vue'
+import DataDetails from '../views/DataDetails.vue'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
     path: '/modeldetails/:model/:jobId',
     name: 'Model Details',
     component: ModelDetails
+  },
+  {
+    path: '/data',
+    name: 'Data Details',
+    component: DataDetails
   }
 ]
 
