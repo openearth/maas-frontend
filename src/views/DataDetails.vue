@@ -4,7 +4,16 @@
       Show data available on s3 bucket
     </h2>
     <v-card class="py-0 flex-grow-1 flex-shrink-0">
-      <v-treeview :items="files"></v-treeview>
+      <v-treeview :items="files">
+        <template v-slot:prepend="{ item, open }">
+          <v-icon v-if="!item.file">
+            {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+          </v-icon>
+          <v-icon v-else>
+            {{ 'mdi-file-document-outline' }}
+          </v-icon>
+        </template>
+      </v-treeview>
     </v-card>
 
     <v-row md-2 class="ma-3 flex-grow-0 flex-shrink-1">
@@ -30,7 +39,7 @@
         Upload to bucket
       </v-btn>
       <v-progress-circular
-        v-if="inputStatus === 'upload'"
+        v-if="uploadStatus === 'upload'"
         indeterminate
         color="primary"
       ></v-progress-circular>
@@ -43,7 +52,7 @@ export default {
   data () {
     return {
       files: [],
-      fileInput: '',
+      fileInput: {},
       uploadStatus: 'input'
     }
   },
@@ -83,7 +92,7 @@ export default {
         })
         .then(data => {
           data.forEach((file, index) => {
-            this.files.push({ id: index, name: file })
+            this.files.push({ id: index, name: file, file: true })
           })
         })
         .catch(error => {
@@ -120,7 +129,6 @@ export default {
           return res.text()
         })
         .then(response => {
-          console.log('Succes uploading to s3 bucket')
           this.uploadStatus = 'succes'
           this.createJob = true
           this.jobId = file.name
