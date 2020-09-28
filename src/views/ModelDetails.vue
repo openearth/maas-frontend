@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="model-details">
     <div>
       <h2 class="h3 mb-3 justify-start">
         Model details for job: {{ $route.params.jobId }} (model:
@@ -12,7 +12,6 @@
 <script>
 export default {
   mounted () {
-    console.log(this.$route.params)
     fetch(
       `${process.env.VUE_APP_SERVER_URL}/processes/${this.$route.params.model}/jobs/${this.$route.params.jobId}`,
       {
