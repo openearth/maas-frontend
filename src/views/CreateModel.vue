@@ -1,5 +1,5 @@
 <template>
-  <v-container class="pa-3">
+  <v-container class="create-model pa-3">
     <div v-if="processInput">
       <h2 class="h3 mb-3 justify-start">
         Create new model: {{ $route.params.model }}

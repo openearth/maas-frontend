@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-0" fluid>
+  <v-container class="home py-0" fluid>
     <v-row justify="center" v-if="processes.length > 0">
       <v-expansion-panels v-model="panels" accordion multiple>
         <v-expansion-panel v-for="(proc, i) in processes" :key="i">
