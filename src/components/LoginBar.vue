@@ -51,12 +51,18 @@ export default {
     }
   },
   mounted () {
-    this.authenticateSession()
-    this.getUser()
-    this.loadProcesses()
+    if (window.location.search) {
+      this.authenticateSession()
+    } else {
+      this.getUser()
+      this.loadProcesses()
+    }
   },
 
   computed: {
+    authUrl () {
+      return `${process.env.VUE_APP_SERVER_URL}/auth${window.location.search}`
+    },
     loginUrl () {
       return `${process.env.VUE_APP_SERVER_URL}/login?redirect_uri=${window.location.origin}`
     },
@@ -68,12 +74,7 @@ export default {
   methods: {
     ...mapActions(['loadProcesses']),
     authenticateSession () {
-      fetch(`${process.env.VUE_APP_SERVER_URL}/auth${window.location.search}`, {
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
+      window.location.assign(this.authUrl)
     },
 
     getUser () {
