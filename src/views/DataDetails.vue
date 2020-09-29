@@ -91,6 +91,7 @@ export default {
           return response.json()
         })
         .then(data => {
+          this.files = []
           data.forEach((file, index) => {
             this.files.push({ id: index, name: file, file: true })
           })
