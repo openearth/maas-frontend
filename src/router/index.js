@@ -11,7 +11,10 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: {
+      windowRedirectAfter: true
+    }
   },
   {
     path: '/createmodel/:model',

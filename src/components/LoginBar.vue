@@ -41,7 +41,6 @@
 </template>
 
 <script>
-import * as Cookies from 'tiny-cookie'
 import { mapActions } from 'vuex'
 
 export default {
@@ -52,13 +51,20 @@ export default {
     }
   },
   mounted () {
-    this.getUser()
-    this.loadProcesses()
+    if (window.location.search) {
+      this.authenticateSession()
+    } else {
+      this.getUser()
+      this.loadProcesses()
+    }
   },
 
   computed: {
+    authUrl () {
+      return `${process.env.VUE_APP_SERVER_URL}/auth${window.location.search}`
+    },
     loginUrl () {
-      return `${process.env.VUE_APP_SERVER_URL}/login`
+      return `${process.env.VUE_APP_SERVER_URL}/login?redirect_uri=${window.location.origin}`
     },
     logoutUrl () {
       return `${process.env.VUE_APP_SERVER_URL}/logout`
@@ -67,20 +73,11 @@ export default {
 
   methods: {
     ...mapActions(['loadProcesses']),
-    logout () {
-      fetch(`${process.env.VUE_APP_SERVER_URL}/logout`)
-        .then(response => {
-          return response.text()
-        })
-        .then(data => {
-          this.email = null
-        })
-        .catch(error => {
-          console.error('Error logout', error)
-        })
+    authenticateSession () {
+      window.location.assign(this.authUrl)
     },
+
     getUser () {
-      console.log(Cookies)
       fetch(`${process.env.VUE_APP_SERVER_URL}/me`, {
         credentials: 'include',
         headers: {
