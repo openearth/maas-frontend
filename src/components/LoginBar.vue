@@ -14,6 +14,10 @@
         <v-icon>mdi-magnify</v-icon>
       </v-btn>
 
+      <v-btn icon to="/data">
+        <v-icon>mdi-folder-account-outline</v-icon>
+      </v-btn>
+
       <v-menu offset-y open-on-hover>
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on">
@@ -37,10 +41,7 @@
 </template>
 
 <script>
-// import * as Cookies from 'tiny-cookie'
 import { mapActions } from 'vuex'
-
-const loginUrl = process.env.VUE_APP_SERVER_URL
 
 export default {
   name: 'login-toolbar',
@@ -50,35 +51,34 @@ export default {
     }
   },
   mounted () {
-    this.getUser()
-    this.loadProcesses()
+    if (window.location.search) {
+      this.authenticateSession()
+    } else {
+      this.getUser()
+      this.loadProcesses()
+    }
   },
 
   computed: {
+    authUrl () {
+      return `${process.env.VUE_APP_SERVER_URL}/auth${window.location.search}`
+    },
     loginUrl () {
-      return `${loginUrl}/login`
+      return `${process.env.VUE_APP_SERVER_URL}/login?redirect_uri=${window.location.origin}`
     },
     logoutUrl () {
-      return `${loginUrl}/logout`
+      return `${process.env.VUE_APP_SERVER_URL}/logout`
     }
   },
 
   methods: {
     ...mapActions(['loadProcesses']),
-    logout () {
-      fetch(`${loginUrl}/logout`)
-        .then(response => {
-          return response.text()
-        })
-        .then(data => {
-          this.email = null
-        })
-        .catch(error => {
-          console.error('Error logout', error)
-        })
+    authenticateSession () {
+      window.location.assign(this.authUrl)
     },
+
     getUser () {
-      fetch(`${loginUrl}/me`, {
+      fetch(`${process.env.VUE_APP_SERVER_URL}/me`, {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
