@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="login-bar">
     <v-app-bar color="primary accent" dark app>
       <v-app-bar-nav-icon>
         <v-btn icon to="/">

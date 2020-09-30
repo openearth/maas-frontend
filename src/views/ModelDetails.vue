@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="model-details">
     <div>
       <h2 class="h3 mb-3 justify-start">
         Model details for job: {{ $route.params.jobId }} (model:
