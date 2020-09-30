@@ -41,8 +41,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-
 export default {
   name: 'login-toolbar',
   data () {
@@ -55,7 +53,6 @@ export default {
       this.authenticateSession()
     } else {
       this.getUser()
-      this.loadProcesses()
     }
   },
 
@@ -72,11 +69,9 @@ export default {
   },
 
   methods: {
-    ...mapActions(['loadProcesses']),
     authenticateSession () {
       window.location.assign(this.authUrl)
     },
-
     getUser () {
       fetch(`${process.env.VUE_APP_SERVER_URL}/me`, {
         credentials: 'include',
