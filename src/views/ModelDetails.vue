@@ -12,7 +12,6 @@
 <script>
 export default {
   mounted () {
-    console.log(this.$route.params)
     fetch(
       `${process.env.VUE_APP_SERVER_URL}/processes/${this.$route.params.model}/jobs/${this.$route.params.jobId}`,
       {
