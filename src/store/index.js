@@ -7,7 +7,8 @@ export default new Vuex.Store({
   state: {
     processInput: null,
     processes: [],
-    schemas: null
+    schemas: null,
+    files: []
   },
   mutations: {},
   actions: {
@@ -60,6 +61,30 @@ export default new Vuex.Store({
             console.error('Error processes', error)
           })
       })
+    },
+    loadFiles (store) {
+      fetch(
+        `${process.env.VUE_APP_SERVER_URL}/files`,
+        {
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+        .then(response => {
+          return response.json()
+        })
+        .then(data => {
+          const files = []
+          data.forEach((file, index) => {
+            files.push({ id: index, name: file, file: true })
+          })
+          store.state.files = files
+        })
+        .catch(error => {
+          console.error('Error fetching files', error)
+        })
     },
     getProcessInputPerModel (state, model) {
       console.log('test', this.state.processes)

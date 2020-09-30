@@ -48,22 +48,24 @@
 
           <!-- use a file input whenever a file input is required -->
           <v-row v-if="parameter.title === 'S3 Path'" class="mx-3">
-            <v-file-input
+            <v-combobox
+              class="px-3"
+              :items="files"
+              v-model="parameter.value"
+              :label="parameter.title"
+              item-value="parameter.default"
+              item-text="name"
               dense
-              multiple
-              v-model="parameter.default"
-              :label="parameter.description"
-              class="pr-3"
-            ></v-file-input>
+            ></v-combobox>
             <v-btn
               bottom
-              :disabled="parameter.default === ''"
               color="primary"
               outlined
-              @click="getUploadCredentials(parameter.default)"
+              to="/data"
             >
-              Upload to bucket
+              Upload new file to bucket
             </v-btn>
+
           </v-row>
         </v-row>
       </v-form>
@@ -97,7 +99,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['processInput', 'processes', 'schemas'])
+    ...mapState(['processInput', 'processes', 'schemas', 'files'])
   },
   watch: {
     schemas (newVal, oldVal) {
@@ -114,11 +116,11 @@ export default {
     if (this.schemas) {
       this.getProcessInputPerModel(this.$route.params.model)
     }
+    this.loadFiles()
   },
   methods: {
-    ...mapActions(['getProcessInputPerModel']),
+    ...mapActions(['getProcessInputPerModel', 'loadFiles']),
     createSchematization () {
-      console.log('create schematization', this.processInput.properties)
       // TODO: convert to input of the job create
       const body = {
         s3path: this.jobId
@@ -135,43 +137,7 @@ export default {
           return res.json()
         })
         .then(response => {
-          console.log(
-            'made a process job thingie',
-            response,
-            'redirect to model deatils'
-          )
           this.$router.push('/')
-        })
-    },
-    getUploadCredentials (file) {
-      fetch(`${process.env.VUE_APP_SERVER_URL}/files/${file[0].name}`, {
-        method: 'POST',
-        credentials: 'include'
-      })
-        .then(res => {
-          return res.json()
-        })
-        .then(response => {
-          this.upload2s3(response, file[0])
-        })
-    },
-    async upload2s3 (response, file) {
-      const form = new FormData()
-      Object.keys(response.fields).forEach(key =>
-        form.append(key, response.fields[key])
-      )
-      form.append('file', file)
-      fetch(response.url, {
-        method: 'POST',
-        body: form
-      })
-        .then(res => {
-          return res.text()
-        })
-        .then(response => {
-          console.log('Succes uploading to s3 bucket')
-          this.createJob = true
-          this.jobId = file.name
         })
     }
   }

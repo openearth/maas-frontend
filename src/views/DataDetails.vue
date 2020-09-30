@@ -4,7 +4,7 @@
       Show data available on s3 bucket
     </h2>
     <v-card class="py-0 flex-grow-1 flex-shrink-0">
-      <v-treeview :items="files">
+      <v-treeview hoverable :items="files">
         <template v-slot:prepend="{ item, open }">
           <v-icon v-if="!item.file">
             {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
@@ -48,15 +48,16 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 export default {
   data () {
     return {
-      files: [],
       fileInput: {},
       uploadStatus: 'input'
     }
   },
   computed: {
+    ...mapState(['files']),
     uploadMessage () {
       if (this.uploadStatus === 'input') {
         if (this.fileInput === '') {
@@ -74,32 +75,10 @@ export default {
     }
   },
   mounted () {
-    this.fetchFiles()
+    this.loadFiles()
   },
   methods: {
-    fetchFiles () {
-      fetch(
-        `${process.env.VUE_APP_SERVER_URL}/files`,
-        {
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      )
-        .then(response => {
-          return response.json()
-        })
-        .then(data => {
-          this.files = []
-          data.forEach((file, index) => {
-            this.files.push({ id: index, name: file, file: true })
-          })
-        })
-        .catch(error => {
-          console.error('Error fetching files', error)
-        })
-    },
+    ...mapActions(['loadFiles']),
     getUploadCredentials (file) {
       this.uploadStatus = 'upload'
       fetch(`${process.env.VUE_APP_SERVER_URL}/files/${file[0].name}`, {
@@ -133,7 +112,7 @@ export default {
           this.uploadStatus = 'succes'
           this.createJob = true
           this.jobId = file.name
-          this.fetchFiles()
+          this.loadFiles()
         })
         .catch(() => {
           this.uploadStatus = 'error'
