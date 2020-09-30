@@ -61,7 +61,7 @@ export default new Vuex.Store({
       })
     },
     loadFiles (store) {
-      fetch(
+      return fetch(
         `${process.env.VUE_APP_SERVER_URL}/files`,
         {
           credentials: 'include',

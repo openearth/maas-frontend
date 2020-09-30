@@ -4,7 +4,8 @@ test('Initial state', () => {
   const initialState = {
     processInput: null,
     processes: [],
-    schemas: null
+    schemas: null,
+    files: []
   }
   expect(store.state).toEqual(initialState)
 })
@@ -50,6 +51,19 @@ describe('loadProcessJobs', () => {
     store.state.processes = [{ id: 'foo' }, { id: 'bar' }]
     store.dispatch('loadProcessJobs', store)
     expect(global.fetch).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('loadFiles', () => {
+  test('updates state.files with jobs', async () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve(['foo'])
+      })
+    )
+    await store.dispatch('loadFiles', store)
+    expect(global.fetch).toHaveBeenCalledTimes(1)
+    expect(store.state.files).toEqual([{ id: 0, name: 'foo', file: true }])
   })
 })
 

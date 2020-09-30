@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-3">
+  <div class="ma-3 home">
     <h2 class="h3 mb-3 justify-start">
       Overview of running workflows
     </h2>
