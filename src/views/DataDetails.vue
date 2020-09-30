@@ -15,35 +15,41 @@
         </template>
       </v-treeview>
     </v-card>
-
     <v-row md-2 class="ma-3 flex-grow-0 flex-shrink-1">
 
       <v-file-input
-        dense
-        multiple
-        v-model="fileInput"
-        label="Upload data to s3 bucket"
-        class="pr-3"
-        :hint="uploadMessage"
-        @input="uploadStatus === 'input'"
-        persistent-hint
+      dense
+      multiple
+      v-model="fileInput"
+      label="Upload data to s3 bucket"
+      class="pr-3"
+      :hint="uploadMessage"
+      @input="uploadStatus === 'input'"
+      persistent-hint
       ></v-file-input>
       <v-btn
-        v-if="uploadStatus === 'input'"
-        bottom
-        :disabled="fileInput === ''"
-        color="primary"
-        outlined
-        @click="getUploadCredentials(fileInput)"
+      v-if="uploadStatus === 'input'"
+      bottom
+      :disabled="fileInput === ''"
+      color="primary"
+      outlined
+      @click="getUploadCredentials(fileInput)"
       >
-        Upload to bucket
-      </v-btn>
-      <v-progress-circular
-        v-if="uploadStatus === 'upload'"
-        indeterminate
-        color="primary"
-      ></v-progress-circular>
-    </v-row>
+      Upload to bucket
+    </v-btn>
+    <v-progress-circular
+    v-if="uploadStatus === 'upload'"
+    indeterminate
+    color="primary"
+    ></v-progress-circular>
+  </v-row>
+
+    <v-btn
+      color="primary"
+      @click="$router.go(-1)"
+    >
+      back
+    </v-btn>
   </div>
 </template>
 
