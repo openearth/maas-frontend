@@ -73,7 +73,7 @@
         <v-btn
           bottom
           color="primary"
-          :disabled="!createJob"
+          :disabled="!validateInputs"
           outlined
           @click="createSchematization"
         >
@@ -99,7 +99,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['processInput', 'processes', 'schemas', 'files'])
+    ...mapState(['processInput', 'processes', 'schemas', 'files']),
+    validateInputs () {
+      const inputs = Object.keys(this.processInput.properties).map(input => input.default)
+      return !inputs.includes('')
+    }
   },
   watch: {
     schemas (newVal, oldVal) {
@@ -108,7 +112,6 @@ export default {
   },
   data () {
     return {
-      createJob: false,
       jobId: ''
     }
   },
