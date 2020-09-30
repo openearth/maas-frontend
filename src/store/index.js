@@ -14,7 +14,8 @@ export default new Vuex.Store({
   actions: {
     loadOpenAPI (store) {
       // Get the openapi json to retrieve the template per model.
-      return fetch(`${process.env.VUE_APP_SERVER_URL}/openapi.json`)
+      const url = process.env.VUE_APP_SERVER_URL.split('/v1')[0]
+      return fetch(`${url}/openapi.json`)
         .then(res => {
           return res.json()
         })
@@ -59,6 +60,21 @@ export default new Vuex.Store({
             console.error('Error processes', error)
           })
       })
+    },
+    deleteJob (store, { proc, jobId }) {
+      return fetch(`${process.env.VUE_APP_SERVER_URL}/processes/${proc}/jobs/${jobId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(res => {
+          return res.json()
+        })
+        .then(response => {
+          store.dispatch('loadProcesses')
+        })
     },
     loadFiles (store) {
       return fetch(

@@ -43,7 +43,7 @@
                         ></v-progress-linear>
                       </v-card-text>
                       <v-card-actions>
-                        <v-btn  @click.stop="deleteJob(proc.id, job)">
+                        <v-btn  @click.stop="deleteJob({proc: proc.id, jobId: job.jobID})">
                           Delete
                         </v-btn>
                         <v-btn :to="`/modeldetails/${proc.id}/${job.jobID}`">
@@ -103,27 +103,19 @@ export default {
     this.loadProcesses()
     this.panels = this.processes.map((k, i) => i)
   },
+  watch: {
+    processes: {
+      handler () {
+        console.log('processes', this.processes)
+        this.panels = this.processes.map((k, i) => i)
+      }
+    }
+  },
   computed: {
     ...mapState(['processes'])
   },
   methods: {
-    ...mapActions(['loadProcesses']),
-    deleteJob (proc, job) {
-      fetch(`${process.env.VUE_APP_SERVER_URL}/processes/${proc}/jobs/${job.jobID}?tags=processes&tags=jobs`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-        .then(res => {
-          return res.json()
-        })
-        .then(response => {
-          this.loadProcesses()
-          this.panels = this.processes.map((k, i) => i)
-        })
-    }
+    ...mapActions(['loadProcesses', 'deleteJob'])
   }
 }
 </script>
