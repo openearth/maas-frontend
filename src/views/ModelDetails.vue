@@ -9,7 +9,7 @@
       Model results
     </h2>
     <data-table :tableHeaders="tableHeaders" :tableItems="resultItems"/>
-    <v-btn v-if="jobResults.s3path !== ''" :to="`/data/${jobResults.s3path}`">
+    <v-btn v-if="jobResults.s3path !== ''" :to="jobDataUrl()" target=”_blank”>
       Show results in bucket
     </v-btn>
   </div>
@@ -51,6 +51,10 @@ export default {
     this.fetchJobResults()
   },
   methods: {
+    jobDataUrl () {
+      const s3path = this.jobResults.s3path.replace('/', '%2F')
+      return `/data/${s3path}`
+    },
     fetchJobDetails () {
       fetch(
         `${process.env.VUE_APP_SERVER_URL}/processes/${this.$route.params.model}/jobs/${this.$route.params.jobId}`,
