@@ -23,18 +23,19 @@
           </v-row>
 
           <!-- Use a text field for string or integer input -->
-          <v-text-field
-            v-if="
-              (parameter.type === 'string' || parameter.type === 'integer') &&
-                !parameter.enum &&
-                !parameter.title === 'S3 Path'
-            "
-            dense
-            :label="parameter.title"
-            v-model="parameter.default"
-            class="px-3"
-          ></v-text-field>
-
+          <v-row
+            v-if="(parameter.type === 'string' || parameter.type === 'integer')
+              && !parameter.enum && parameter.title !== 'S3 Path'
+              && parameter.title !== 'Type'"
+            class="mx-3"
+            >
+            <v-text-field
+              dense
+              :label="parameter.title"
+              v-model="parameter.default"
+              class="px-3"
+            ></v-text-field>
+          </v-row>
           <!-- use a combobox whenever a enumerate object is passed -->
           <v-combobox
             class="px-3"
@@ -53,8 +54,11 @@
               :items="files"
               v-model="parameter.value"
               :label="parameter.title"
+              :hint="parameter.description"
+              persistent-hint
               item-value="parameter.default"
               item-text="name"
+              :prefix="parameter.properties.prefix"
               dense
             ></v-combobox>
             <v-btn
@@ -124,10 +128,20 @@ export default {
   methods: {
     ...mapActions(['getProcessInputPerModel', 'loadFiles']),
     createSchematization () {
+      const body = {}
+      Object.entries(this.processInput.properties).forEach(entry => {
+        if (entry[0] === 's3path') {
+          body[entry[0]] = `${entry[1].properties.prefix}${entry[1].value.name}`
+        } else {
+          body[entry[0]] = entry[1].default
+        }
+      })
+      console.log(body)
+
       // TODO: convert to input of the job create
-      const body = {
-        s3path: this.jobId
-      }
+      // const body = {
+      //   s3path: this.jobId
+      // }
       fetch(
         `${process.env.VUE_APP_SERVER_URL}/processes/${this.$route.params.model}/jobs`,
         {
