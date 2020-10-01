@@ -49,6 +49,11 @@
           </v-icon>
         </template>
         <template slot="append" slot-scope="{item}">
+          <v-btn color="primary" icon :href="downloadUrl(item)">
+            <v-icon dark>
+              mdi-cloud-download-outline
+            </v-icon>
+          </v-btn>
           <v-btn color="primary" icon @click="deleteFile(item)">
             <v-icon dark>
               mdi-delete-outline
@@ -92,6 +97,9 @@ export default {
   },
   methods: {
     ...mapActions(['loadFiles']),
+    downloadUrl (file) {
+      return `${process.env.VUE_APP_SERVER_URL}/files/${file.name}`
+    },
     deleteFile (file) {
       fetch(`${process.env.VUE_APP_SERVER_URL}/files/${file.name}`, {
         method: 'DELETE',
