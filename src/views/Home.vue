@@ -25,12 +25,11 @@
                       :elevation="hover ? 12 : 2"
                       :class="{ 'on-hover': hover }"
                       v-ripple
-                      :to="`/modeldetails/${proc.id}/${job.jobID}`"
                     >
                       <v-card-title class="headline font-weight-bold">{{
                         job.jobID
                       }}</v-card-title>
-                      <v-card-text>
+                      <v-card-text >
                         {{ job.message }}
                       </v-card-text>
 
@@ -43,6 +42,14 @@
                           striped
                         ></v-progress-linear>
                       </v-card-text>
+                      <v-card-actions>
+                        <v-btn  @click.stop="deleteJob({proc: proc.id, jobId: job.jobID})">
+                          Delete
+                        </v-btn>
+                        <v-btn :to="`/modeldetails/${proc.id}/${job.jobID}`">
+                          Details
+                        </v-btn>
+                      </v-card-actions>
                     </v-card>
                   </v-hover>
                 </v-col>
@@ -87,16 +94,28 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 export default {
   data: () => ({
     panels: []
   }),
   mounted () {
+    this.loadProcesses()
     this.panels = this.processes.map((k, i) => i)
+  },
+  watch: {
+    processes: {
+      handler () {
+        console.log('processes', this.processes)
+        this.panels = this.processes.map((k, i) => i)
+      }
+    }
   },
   computed: {
     ...mapState(['processes'])
+  },
+  methods: {
+    ...mapActions(['loadProcesses', 'deleteJob'])
   }
 }
 </script>

@@ -61,6 +61,21 @@ export default new Vuex.Store({
           })
       })
     },
+    deleteJob (store, { proc, jobId }) {
+      return fetch(`${process.env.VUE_APP_SERVER_URL}/processes/${proc}/jobs/${jobId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(res => {
+          return res.json()
+        })
+        .then(response => {
+          store.dispatch('loadProcesses')
+        })
+    },
     loadFiles (store) {
       return fetch(
         `${process.env.VUE_APP_SERVER_URL}/files`,
