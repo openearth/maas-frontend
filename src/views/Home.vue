@@ -24,7 +24,6 @@
                     :elevation="hover ? 12 : 2"
                     :class="{ 'on-hover': hover }"
                     class="d-flex flex-column"
-                    v-ripple
                   >
                     <v-card-title class="headline font-weight-bold">{{
                       job.title
@@ -96,7 +95,7 @@
 import { mapState, mapActions } from 'vuex'
 export default {
   data: () => ({
-    panels: []
+    panels: null
   }),
   mounted () {
     this.panels = this.processes.map((k, i) => i)

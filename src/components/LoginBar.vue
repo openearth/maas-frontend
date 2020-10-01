@@ -10,13 +10,27 @@
       <v-toolbar-title>DeltaSphere Computing services</v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <v-btn icon>
+      <!-- <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
-      </v-btn>
+      </v-btn> -->
 
-      <v-btn icon to="/data">
-        <v-icon>mdi-folder-account-outline</v-icon>
-      </v-btn>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" icon to="/usage">
+            <v-icon>mdi-account-details</v-icon>
+          </v-btn>
+        </template>
+        <span>Show usage</span>
+      </v-tooltip>
+
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" icon to="/data">
+            <v-icon>mdi-folder-account-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Show bucket content</span>
+      </v-tooltip>
 
       <v-menu offset-y open-on-hover>
         <template v-slot:activator="{ on, attrs }">

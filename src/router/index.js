@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import CreateModel from '../views/CreateModel.vue'
 import ModelDetails from '../views/ModelDetails.vue'
 import DataDetails from '../views/DataDetails.vue'
+import UsageDetails from '../views/UsageDetails.vue'
 
 Vue.use(VueRouter)
 
@@ -30,6 +31,11 @@ const routes = [
     path: '/data',
     name: 'Data Details',
     component: DataDetails
+  },
+  {
+    path: '/usage',
+    name: 'Usage Details',
+    component: UsageDetails
   }
 ]
 

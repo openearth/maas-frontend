@@ -24,13 +24,16 @@ export default {
           text: 'Property',
           align: 'left',
           sortable: false,
-          value: 'name'
+          value: 'name',
+          width: '50%'
         },
         {
           text: 'Value',
           align: 'left',
           sortable: false,
-          value: 'value'
+          value: 'value',
+          width: '50%'
+
         }
       ],
       detailItems: [],
@@ -90,6 +93,12 @@ export default {
           this.resultItems = []
 
           Object.entries(data).forEach(val => {
+            if (val[0] === 's3path') {
+              val[0] = `<a
+  :href="${val[0]}"
+  v-text="item.label"
+  </a>`
+            }
             this.resultItems.push({
               value: val[1],
               name: val[0]
