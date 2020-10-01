@@ -13,7 +13,8 @@ export default new Vuex.Store({
   actions: {
     loadOpenAPI () {
       // Get the openapi json to retrieve the template per model.
-      fetch(`${process.env.VUE_APP_SERVER_URL}/openapi.json`)
+      const url = process.env.VUE_APP_SERVER_URL.split('/v1')[0]
+      return fetch(`${url}/openapi.json`)
         .then(res => {
           return res.json()
         })
