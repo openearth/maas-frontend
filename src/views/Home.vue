@@ -20,14 +20,15 @@
                     height="300px"
                     :elevation="hover ? 12 : 2"
                     :class="{ 'on-hover': hover }"
+                    class="d-flex flex-column"
                     v-ripple
                     :to="`/modeldetails/${proc.id}/${job.jobID}`"
                   >
                     <v-card-title class="headline font-weight-bold">{{
-                      job.jobID
+                      job.title
                     }}</v-card-title>
-                    <v-card-text>
-                      {{ job.message }}
+                    <v-card-text class="flex-grow-1 flex-shrink0">
+                      {{ job.description }}
                     </v-card-text>
 
                     <v-card-text>
