@@ -9,7 +9,9 @@
       Model results
     </h2>
     <data-table :tableHeaders="tableHeaders" :tableItems="resultItems"/>
-
+    <v-btn v-if="jobResults.s3path !== ''" :to="`/data/${jobResults.s3path}`">
+      Show results in bucket
+    </v-btn>
   </div>
 </template>
 
@@ -37,7 +39,8 @@ export default {
         }
       ],
       detailItems: [],
-      resultItems: []
+      resultItems: [],
+      jobResults: []
     }
   },
   components: {
@@ -93,12 +96,6 @@ export default {
           this.resultItems = []
 
           Object.entries(data).forEach(val => {
-            if (val[0] === 's3path') {
-              val[0] = `<a
-  :href="${val[0]}"
-  v-text="item.label"
-  </a>`
-            }
             this.resultItems.push({
               value: val[1],
               name: val[0]

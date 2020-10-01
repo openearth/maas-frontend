@@ -4,7 +4,6 @@
       Show data available on s3 bucket
     </h2>
     <v-row md-2 class="ma-3 flex-grow-0 flex-shrink-1">
-
       <v-file-input
         dense
         multiple
@@ -26,13 +25,14 @@
       Upload to bucket
     </v-btn>
     <v-progress-circular
-    v-if="uploadStatus === 'upload'"
-    indeterminate
-    color="primary"
-    ></v-progress-circular>
-  </v-row>
+      v-if="uploadStatus === 'upload'"
+      indeterminate
+      color="primary"
+      ></v-progress-circular>
+    </v-row>
 
     <v-btn
+      class="mb-3"
       color="primary"
       @click="$router.go(-1)"
     >
@@ -88,7 +88,7 @@ export default {
     }
   },
   mounted () {
-    this.loadFiles()
+    this.loadFiles(this.$route.params.prefix)
   },
   methods: {
     ...mapActions(['loadFiles']),

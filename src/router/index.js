@@ -33,6 +33,11 @@ const routes = [
     component: DataDetails
   },
   {
+    path: '/data/:prefix',
+    name: 'Data Details',
+    component: DataDetails
+  },
+  {
     path: '/usage',
     name: 'Usage Details',
     component: UsageDetails

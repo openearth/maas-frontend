@@ -76,9 +76,13 @@ export default new Vuex.Store({
           store.dispatch('loadProcesses')
         })
     },
-    loadFiles (store) {
+    loadFiles (store, prefix) {
+      let url = `${process.env.VUE_APP_SERVER_URL}/files`
+      if (prefix) {
+        url = `${url}?prefix=${prefix}`
+      }
       return fetch(
-        `${process.env.VUE_APP_SERVER_URL}/files`,
+        url,
         {
           credentials: 'include',
           headers: {
