@@ -1,5 +1,5 @@
 <template>
-  <v-container class="pa-3">
+  <div class="ma-3 create-model">
     <div v-if="processInput">
       <h2 class="h3 mb-3 justify-start">
         Create new model: {{ $route.params.model }}
@@ -23,18 +23,19 @@
           </v-row>
 
           <!-- Use a text field for string or integer input -->
-          <v-text-field
-            v-if="
-              (parameter.type === 'string' || parameter.type === 'integer') &&
-                !parameter.enum &&
-                !parameter.title === 'S3 Path'
-            "
-            dense
-            :label="parameter.title"
-            v-model="parameter.default"
-            class="px-3"
-          ></v-text-field>
-
+          <v-row
+            v-if="(parameter.type === 'string' || parameter.type === 'integer')
+              && !parameter.enum && parameter.title !== 'S3 Path'
+              && parameter.title !== 'Type'"
+            class="mx-3"
+            >
+            <v-text-field
+              dense
+              :label="parameter.title"
+              v-model="parameter.default"
+              class="px-3"
+            ></v-text-field>
+          </v-row>
           <!-- use a combobox whenever a enumerate object is passed -->
           <v-combobox
             class="px-3"
@@ -48,22 +49,27 @@
 
           <!-- use a file input whenever a file input is required -->
           <v-row v-if="parameter.title === 'S3 Path'" class="mx-3">
-            <v-file-input
+            <v-combobox
+              class="px-3"
+              :items="files"
+              v-model="parameter.value"
+              :label="parameter.title"
+              :hint="parameter.description"
+              persistent-hint
+              item-value="parameter.default"
+              item-text="name"
+              :prefix="parameter.properties.prefix"
               dense
-              multiple
-              v-model="parameter.default"
-              :label="parameter.description"
-              class="pr-3"
-            ></v-file-input>
+            ></v-combobox>
             <v-btn
               bottom
-              :disabled="parameter.default === ''"
               color="primary"
               outlined
-              @click="getUploadCredentials(parameter.default)"
+              to="/data"
             >
-              Upload to bucket
+              Upload new file to bucket
             </v-btn>
+
           </v-row>
         </v-row>
       </v-form>
@@ -71,7 +77,7 @@
         <v-btn
           bottom
           color="primary"
-          :disabled="!createJob"
+          :disabled="!validateInputs"
           outlined
           @click="createSchematization"
         >
@@ -84,7 +90,7 @@
         Loading model input..
       </span>
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -97,7 +103,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['processInput', 'processes', 'schemas'])
+    ...mapState(['processInput', 'processes', 'schemas', 'files']),
+    validateInputs () {
+      const inputs = Object.keys(this.processInput.properties).map(input => input.default)
+      return !inputs.includes('')
+    }
   },
   watch: {
     schemas (newVal, oldVal) {
@@ -106,7 +116,6 @@ export default {
   },
   data () {
     return {
-      createJob: false,
       jobId: ''
     }
   },
@@ -114,15 +123,25 @@ export default {
     if (this.schemas) {
       this.getProcessInputPerModel(this.$route.params.model)
     }
+    this.loadFiles()
   },
   methods: {
-    ...mapActions(['getProcessInputPerModel']),
+    ...mapActions(['getProcessInputPerModel', 'loadFiles']),
     createSchematization () {
-      console.log('create schematization', this.processInput.properties)
+      const body = {}
+      Object.entries(this.processInput.properties).forEach(entry => {
+        if (entry[0] === 's3path') {
+          body[entry[0]] = `${entry[1].properties.prefix}${entry[1].value.name}`
+        } else {
+          body[entry[0]] = entry[1].default
+        }
+      })
+      console.log(body)
+
       // TODO: convert to input of the job create
-      const body = {
-        s3path: this.jobId
-      }
+      // const body = {
+      //   s3path: this.jobId
+      // }
       fetch(
         `${process.env.VUE_APP_SERVER_URL}/processes/${this.$route.params.model}/jobs`,
         {
@@ -135,43 +154,7 @@ export default {
           return res.json()
         })
         .then(response => {
-          console.log(
-            'made a process job thingie',
-            response,
-            'redirect to model deatils'
-          )
           this.$router.push('/')
-        })
-    },
-    getUploadCredentials (file) {
-      fetch(`${process.env.VUE_APP_SERVER_URL}/files/${file[0].name}`, {
-        method: 'POST',
-        credentials: 'include'
-      })
-        .then(res => {
-          return res.json()
-        })
-        .then(response => {
-          this.upload2s3(response, file[0])
-        })
-    },
-    async upload2s3 (response, file) {
-      const form = new FormData()
-      Object.keys(response.fields).forEach(key =>
-        form.append(key, response.fields[key])
-      )
-      form.append('file', file)
-      fetch(response.url, {
-        method: 'POST',
-        body: form
-      })
-        .then(res => {
-          return res.text()
-        })
-        .then(response => {
-          console.log('Succes uploading to s3 bucket')
-          this.createJob = true
-          this.jobId = file.name
         })
     }
   }

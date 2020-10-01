@@ -7,24 +7,25 @@ export default new Vuex.Store({
   state: {
     processInput: null,
     processes: [],
-    schemas: null
+    schemas: null,
+    files: []
   },
   mutations: {},
   actions: {
-    loadOpenAPI () {
+    loadOpenAPI (store) {
       // Get the openapi json to retrieve the template per model.
-      fetch(`${process.env.VUE_APP_SERVER_URL}/openapi.json`)
+      const url = process.env.VUE_APP_SERVER_URL.split('/v1')[0]
+      return fetch(`${url}/openapi.json`)
         .then(res => {
           return res.json()
         })
         .then(response => {
-          console.log(response)
           // save the openapi spec as documenatation
-          this.state.schemas = response.components.schemas
+          store.state.schemas = response.components.schemas
         })
     },
-    loadProcesses (state) {
-      fetch(`${process.env.VUE_APP_SERVER_URL}/processes`, {
+    loadProcesses (store) {
+      return fetch(`${process.env.VUE_APP_SERVER_URL}/processes`, {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
@@ -34,16 +35,15 @@ export default new Vuex.Store({
           return response.json()
         })
         .then(data => {
-          console.log('Success processes', data)
-          this.state.processes = data
-          this.dispatch('loadProcessJobs')
+          store.state.processes = data
+          store.dispatch('loadProcessJobs')
         })
         .catch(error => {
           console.error('Error processes', error)
         })
     },
-    loadProcessJobs (state) {
-      this.state.processes.forEach(proc => {
+    loadProcessJobs (store) {
+      store.state.processes.forEach(proc => {
         fetch(`${process.env.VUE_APP_SERVER_URL}/processes/${proc.id}/jobs`, {
           credentials: 'include',
           headers: {
@@ -61,15 +61,52 @@ export default new Vuex.Store({
           })
       })
     },
+    deleteJob (store, { proc, jobId }) {
+      return fetch(`${process.env.VUE_APP_SERVER_URL}/processes/${proc}/jobs/${jobId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(res => {
+          return res.json()
+        })
+        .then(response => {
+          store.dispatch('loadProcesses')
+        })
+    },
+    loadFiles (store, prefix) {
+      let url = `${process.env.VUE_APP_SERVER_URL}/files`
+      if (prefix) {
+        url = `${url}?prefix=${prefix}`
+      }
+      return fetch(
+        url,
+        {
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+        .then(response => {
+          return response.json()
+        })
+        .then(data => {
+          const files = []
+          data.forEach((file, index) => {
+            files.push({ id: index, name: file, file: true })
+          })
+          store.state.files = files
+        })
+        .catch(error => {
+          console.error('Error fetching files', error)
+        })
+    },
     getProcessInputPerModel (state, model) {
-      console.log('test', this.state.processes)
       const process = this.state.processes.find(p => p.id === model)
       this.state.processInput = this.state.schemas[process.inputs.type]
-      console.log(
-        process.inputs.type,
-        this.state.processInput,
-        this.state.schemas
-      )
     }
   },
   modules: {}

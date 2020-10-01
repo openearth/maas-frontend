@@ -23,9 +23,10 @@ export default {
   }),
   mounted () {
     this.loadOpenAPI()
+    this.loadProcesses()
   },
   methods: {
-    ...mapActions(['loadOpenAPI'])
+    ...mapActions(['loadOpenAPI', 'loadProcesses'])
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="login-bar">
     <v-app-bar color="primary accent" dark app>
       <v-app-bar-nav-icon>
         <v-btn icon to="/">
@@ -10,9 +10,27 @@
       <v-toolbar-title>DeltaSphere Computing services</v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <v-btn icon>
+      <!-- <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
-      </v-btn>
+      </v-btn> -->
+
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" icon to="/usage">
+            <v-icon>mdi-account-details</v-icon>
+          </v-btn>
+        </template>
+        <span>Show usage</span>
+      </v-tooltip>
+
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" icon to="/data">
+            <v-icon>mdi-folder-account-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Show bucket content</span>
+      </v-tooltip>
 
       <v-menu offset-y open-on-hover>
         <template v-slot:activator="{ on, attrs }">
@@ -37,11 +55,6 @@
 </template>
 
 <script>
-// import * as Cookies from 'tiny-cookie'
-import { mapActions } from 'vuex'
-
-const loginUrl = process.env.VUE_APP_SERVER_URL
-
 export default {
   name: 'login-toolbar',
   data () {
@@ -50,35 +63,31 @@ export default {
     }
   },
   mounted () {
-    this.getUser()
-    this.loadProcesses()
+    if (window.location.search) {
+      this.authenticateSession()
+    } else {
+      this.getUser()
+    }
   },
 
   computed: {
+    authUrl () {
+      return `${process.env.VUE_APP_SERVER_URL}/auth${window.location.search}`
+    },
     loginUrl () {
-      return `${loginUrl}/login`
+      return `${process.env.VUE_APP_SERVER_URL}/login?redirect_uri=${window.location.origin}`
     },
     logoutUrl () {
-      return `${loginUrl}/logout`
+      return `${process.env.VUE_APP_SERVER_URL}/logout`
     }
   },
 
   methods: {
-    ...mapActions(['loadProcesses']),
-    logout () {
-      fetch(`${loginUrl}/logout`)
-        .then(response => {
-          return response.text()
-        })
-        .then(data => {
-          this.email = null
-        })
-        .catch(error => {
-          console.error('Error logout', error)
-        })
+    authenticateSession () {
+      window.location.assign(this.authUrl)
     },
     getUser () {
-      fetch(`${loginUrl}/me`, {
+      fetch(`${process.env.VUE_APP_SERVER_URL}/me`, {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
