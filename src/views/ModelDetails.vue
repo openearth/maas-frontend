@@ -1,35 +1,105 @@
 <template>
-  <v-container class="model-details">
-    <div>
-      <h2 class="h3 mb-3 justify-start">
-        Model details for job: {{ $route.params.jobId }} (model:
-        {{ $route.params.model }})
-      </h2>
-    </div>
-  </v-container>
+  <div class="model-details pa-3 d-flex flex-column">
+    <h2 class="h3 mb-3 justify-start">
+      Model details for job: {{ jobDetails.title }} (workflow:
+      {{ $route.params.model }})
+    </h2>
+    <data-table :tableHeaders="tableHeaders" :tableItems="detailItems"/>
+    <h2 class="mt-4">
+      Model results
+    </h2>
+    <data-table :tableHeaders="tableHeaders" :tableItems="resultItems"/>
+
+  </div>
 </template>
 
 <script>
+import DataTable from '@/components/DataTable'
 export default {
-  mounted () {
-    fetch(
-      `${process.env.VUE_APP_SERVER_URL}/processes/${this.$route.params.model}/jobs/${this.$route.params.jobId}`,
-      {
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
+  data () {
+    return {
+      jobDetails: [],
+      tableHeaders: [
+        {
+          text: 'Property',
+          align: 'left',
+          sortable: false,
+          value: 'name'
+        },
+        {
+          text: 'Value',
+          align: 'left',
+          sortable: false,
+          value: 'value'
         }
-      }
-    )
-      .then(response => {
-        return response.json()
-      })
-      .then(data => {
-        console.log('Success fetching job per process_id', data)
-      })
-      .catch(error => {
-        console.error('Error fetching job per process_id', error)
-      })
+      ],
+      detailItems: [],
+      resultItems: []
+    }
+  },
+  components: {
+    DataTable
+  },
+  mounted () {
+    this.fetchJobDetails()
+    this.fetchJobResults()
+  },
+  methods: {
+    fetchJobDetails () {
+      fetch(
+        `${process.env.VUE_APP_SERVER_URL}/processes/${this.$route.params.model}/jobs/${this.$route.params.jobId}`,
+        {
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+        .then(response => {
+          return response.json()
+        })
+        .then(data => {
+          this.jobDetails = data
+          this.detailItems = []
+          Object.entries(data).forEach(val => {
+            this.detailItems.push({
+              value: val[1],
+              name: val[0]
+            })
+          })
+        })
+        .catch(error => {
+          console.error('Error fetching job per process_id', error)
+        })
+    },
+    fetchJobResults () {
+      fetch(
+        `${process.env.VUE_APP_SERVER_URL}/processes/${this.$route.params.model}/jobs/${this.$route.params.jobId}/results`,
+        {
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+        .then(response => {
+          return response.json()
+        })
+        .then(data => {
+          this.jobResults = data
+          this.resultItems = []
+
+          Object.entries(data).forEach(val => {
+            this.resultItems.push({
+              value: val[1],
+              name: val[0]
+            })
+          })
+        })
+        .catch(error => {
+          console.error('Error fetching job per process_id', error)
+        })
+    }
   }
 }
 </script>

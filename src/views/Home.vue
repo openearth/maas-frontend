@@ -25,7 +25,6 @@
                     :class="{ 'on-hover': hover }"
                     class="d-flex flex-column"
                     v-ripple
-                    :to="`/modeldetails/${proc.id}/${job.jobID}`"
                   >
                     <v-card-title class="headline font-weight-bold">{{
                       job.title
@@ -100,15 +99,14 @@ export default {
     panels: []
   }),
   mounted () {
-    this.loadProcesses()
     this.panels = this.processes.map((k, i) => i)
   },
   watch: {
     processes: {
       handler () {
-        console.log('processes', this.processes)
         this.panels = this.processes.map((k, i) => i)
-      }
+      },
+      deep: true
     }
   },
   computed: {

@@ -13,19 +13,26 @@
             {{ 'mdi-file-document-outline' }}
           </v-icon>
         </template>
+        <template slot="append" slot-scope="{item}">
+          <v-btn color="primary" icon @click="deleteFile(item)">
+            <v-icon dark>
+              mdi-delete-outline
+            </v-icon>
+          </v-btn>
+        </template>
       </v-treeview>
     </v-card>
     <v-row md-2 class="ma-3 flex-grow-0 flex-shrink-1">
 
       <v-file-input
-      dense
-      multiple
-      v-model="fileInput"
-      label="Upload data to s3 bucket"
-      class="pr-3"
-      :hint="uploadMessage"
-      @input="uploadStatus === 'input'"
-      persistent-hint
+        dense
+        multiple
+        v-model="fileInput"
+        label="Upload data to s3 bucket"
+        class="pr-3"
+        :hint="uploadMessage"
+        @input="uploadStatus === 'input'"
+        persistent-hint
       ></v-file-input>
       <v-btn
       v-if="uploadStatus === 'input'"
@@ -85,6 +92,18 @@ export default {
   },
   methods: {
     ...mapActions(['loadFiles']),
+    deleteFile (file) {
+      fetch(`${process.env.VUE_APP_SERVER_URL}/files/${file.name}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => {
+          this.loadFiles()
+        })
+    },
     getUploadCredentials (file) {
       this.uploadStatus = 'upload'
       fetch(`${process.env.VUE_APP_SERVER_URL}/files/${file[0].name}`, {
