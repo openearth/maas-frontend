@@ -3,35 +3,36 @@
     <h2 class="h3 mb-3 justify-start">
       Overview of running workflows
     </h2>
-    <v-container class="py-0" fluid>
-      <v-row justify="center" v-if="processes.length > 0">
-        <v-expansion-panels v-model="panels" accordion multiple>
-          <v-expansion-panel v-for="(proc, i) in processes" :key="i">
-            <v-expansion-panel-header
-              >Running models for: {{ proc.id }}</v-expansion-panel-header
-            >
-            <v-expansion-panel-content>
-              <v-row>
-                <v-col
-                  v-for="job in proc.jobs"
-                  cols="2"
-                  sm="3"
-                  class="pa-3"
-                  :key="job.title"
-                >
-                  <v-hover v-slot:default="{ hover }">
-                    <v-card
-                      height="300px"
-                      :elevation="hover ? 12 : 2"
-                      :class="{ 'on-hover': hover }"
-                      v-ripple
-                    >
-                      <v-card-title class="headline font-weight-bold">{{
-                        job.jobID
-                      }}</v-card-title>
-                      <v-card-text >
-                        {{ job.message }}
-                      </v-card-text>
+    <v-row justify="center" v-if="processes.length > 0">
+      <v-expansion-panels v-model="panels" accordion multiple>
+        <v-expansion-panel v-for="(proc, i) in processes" :key="i">
+          <v-expansion-panel-header
+            >Running models for: {{ proc.id }}</v-expansion-panel-header
+          >
+          <v-expansion-panel-content>
+            <v-row>
+              <v-col
+                v-for="job in proc.jobs"
+                cols="2"
+                sm="3"
+                class="pa-3"
+                :key="job.title"
+              >
+                <v-hover v-slot:default="{ hover }">
+                  <v-card
+                    height="300px"
+                    :elevation="hover ? 12 : 2"
+                    :class="{ 'on-hover': hover }"
+                    class="d-flex flex-column"
+                    v-ripple
+                    :to="`/modeldetails/${proc.id}/${job.jobID}`"
+                  >
+                    <v-card-title class="headline font-weight-bold">{{
+                      job.title
+                    }}</v-card-title>
+                    <v-card-text class="flex-grow-1 flex-shrink0">
+                      {{ job.description }}
+                    </v-card-text>
 
                       <v-card-text>
                         Status: {{ job.status }}
@@ -89,7 +90,6 @@
           Please login to show model workflows.
         </span>
       </v-row>
-    </v-container>
   </div>
 </template>
 
